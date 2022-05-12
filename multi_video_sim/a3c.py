@@ -98,7 +98,7 @@ class ActorNetwork(object):
 
     def train(self, inputs, acts, act_grad_weights):
         # there can be only one kind of mask in a training epoch
-        for i in xrange(inputs.shape[0]):
+        for i in range(inputs.shape[0]):
             assert np.all(inputs[0, MASK_DIM, -MAX_BR_LEVELS:] == \
                           inputs[i, MASK_DIM, -MAX_BR_LEVELS:])
 
@@ -113,7 +113,7 @@ class ActorNetwork(object):
         })
 
     def predict(self, inputs):
-        for i in xrange(inputs.shape[0]):
+        for i in range(inputs.shape[0]):
             assert np.all(inputs[0, MASK_DIM, -MAX_BR_LEVELS:] == \
                           inputs[i, MASK_DIM, -MAX_BR_LEVELS:])
 
@@ -123,7 +123,7 @@ class ActorNetwork(object):
         })
 
     def get_gradients(self, inputs, acts, act_grad_weights):
-        for i in xrange(inputs.shape[0]):
+        for i in range(inputs.shape[0]):
             assert np.all(inputs[0, MASK_DIM, -MAX_BR_LEVELS:] == \
                           inputs[i, MASK_DIM, -MAX_BR_LEVELS:])
 
@@ -270,7 +270,7 @@ def compute_gradients(s_batch, a_batch, r_batch, terminal, actor, critic):
     else:
         R_batch[-1, 0] = v_batch[-1, 0]  # boot strap from last state
 
-    for t in reversed(xrange(ba_size - 1)):
+    for t in reversed(range(ba_size - 1)):
         R_batch[t, 0] = r_batch[t] + GAMMA * R_batch[t + 1, 0]
 
     td_batch = R_batch - v_batch
@@ -288,7 +288,7 @@ def discount(x, gamma):
     """
     out = np.zeros(len(x))
     out[-1] = x[-1]
-    for i in reversed(xrange(len(x)-1)):
+    for i in reversed(range(len(x)-1)):
         out[i] = x[i] + gamma*out[i+1]
     assert x.ndim >= 1
     # More efficient version:
@@ -302,7 +302,7 @@ def compute_entropy(x):
     H(x) = - sum( p * log(p))
     """
     H = 0.0
-    for i in xrange(len(x)):
+    for i in range(len(x)):
         if 0 < x[i] < 1:
             H -= x[i] * np.log(x[i])
     return H

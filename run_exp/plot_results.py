@@ -3,16 +3,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-RESULTS_FOLDER = './results/'
+# RESULTS_FOLDER = './results/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
-VIDEO_LEN = 64
+VIDEO_LEN = 40 #64 # try to fix bug in line
 VIDEO_BIT_RATE = [350, 600, 1000, 2000, 3000]
 COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired 
 SIM_DP = 'sim_dp'
-SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
+# SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
+
+RESULTS_FOLDER = './results_pretrained/'
+SCHEMES = ['RL']
 
 
 def main():
@@ -30,6 +33,8 @@ def main():
 		bw_all[scheme] = {}
 
 	log_files = os.listdir(RESULTS_FOLDER)
+
+	print("parse all log files")
 	for log_file in log_files:
 
 		time_ms = []
@@ -82,7 +87,7 @@ def main():
 				bw_all[scheme][log_file[len('log_' + str(scheme) + '_'):]] = bw
 				raw_reward_all[scheme][log_file[len('log_' + str(scheme) + '_'):]] = reward
 				break
-
+	print("done parsing log files")
 	# ---- ---- ---- ----
 	# Reward records
 	# ---- ---- ---- ----
@@ -91,7 +96,7 @@ def main():
 	reward_all = {}
 	for scheme in SCHEMES:
 		reward_all[scheme] = []
-
+	print("time all {}".format(time_all))
 	for l in time_all[SCHEMES[0]]:
 		schemes_check = True
 		for scheme in SCHEMES:
@@ -108,8 +113,11 @@ def main():
 
 	mean_rewards = {}
 	for scheme in SCHEMES:
+		print("scheme: {} rewards_len: {}".format(scheme, len(reward_all)))
 		mean_rewards[scheme] = np.mean(reward_all[scheme])
+	print("mean rewards per scheme:\n {}".format(mean_rewards))
 
+	print("show total reward graph: ")
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 
@@ -133,7 +141,7 @@ def main():
 	# ---- ---- ---- ----
 	# CDF 
 	# ---- ---- ---- ----
-
+	print("show CDF graph: ")
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 

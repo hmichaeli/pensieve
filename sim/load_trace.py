@@ -1,7 +1,8 @@
 import os
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
-COOKED_TRACE_FOLDER = './cooked_traces/'
+COOKED_TRACE_FOLDER = dir_path+'/train_sim_traces/'
 
 
 def load_trace(cooked_trace_folder=COOKED_TRACE_FOLDER):

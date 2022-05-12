@@ -15,6 +15,8 @@ def main():
 	for trace_file in files:
 		if os.stat(IN_FILE + trace_file).st_size >= FILE_SIZE:
 			with open(IN_FILE + trace_file, 'rb') as f, open(OUT_FILE + trace_file, 'wb') as mf:
+				print("in file: " + str(IN_FILE + trace_file))
+				print("out file: " + str(OUT_FILE + trace_file))
 				millisec_time = 0
 				mf.write(str(millisec_time) + '\n')
 				for line in f:
@@ -29,13 +31,14 @@ def main():
 						to_send = (millisec_count * pkt_per_millisec) - pkt_count
 						to_send = np.floor(to_send)
 
-						for i in xrange(int(to_send)):
+						for i in range(int(to_send)):
 							mf.write(str(millisec_time) + '\n')
 
 						pkt_count += to_send
 
 						if millisec_count >= EXP_LEN:
 							break
+	print("done")
 
 
 if __name__ == '__main__':

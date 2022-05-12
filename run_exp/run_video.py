@@ -21,6 +21,9 @@ from time import sleep
 # the default location for firefox is /usr/bin/firefox and chrome binary is /usr/bin/google-chrome
 # if they are at those locations, don't need to specify
 
+def log(val):
+	pass
+	# print("[run_video] " + str(val))
 
 def timeout_handler(signum, frame):
 	raise Exception("Timeout")
@@ -31,7 +34,10 @@ run_time = int(sys.argv[3])
 process_id = sys.argv[4]
 trace_file = sys.argv[5]
 sleep_time = sys.argv[6]
-	
+
+# DEBUG:
+# run_time = 320
+
 # prevent multiple process from being synchronized
 sleep(int(sleep_time))
 	
@@ -51,35 +57,56 @@ try:
 	
 	# start abr algorithm server
 	if abr_algo == 'RL':
-		command = 'exec /usr/bin/python ../rl_server/rl_server_no_training.py ' + trace_file
+#		command = 'exec /usr/bin/python ../rl_server/rl_server_no_training.py ' + trace_file
+
+		command = 'exec /usr/bin/python ../rl_server/training_rl_server.py ' + trace_file
+
+	#TODO: run with venv python, check if ok
+		# command = 'exec python ../rl_server/rl_server_no_training.py ' + trace_file
+
 	elif abr_algo == 'fastMPC':
 		command = 'exec /usr/bin/python ../rl_server/mpc_server.py ' + trace_file
 	elif abr_algo == 'robustMPC':
 		command = 'exec /usr/bin/python ../rl_server/robust_mpc_server.py ' + trace_file
 	else:
 		command = 'exec /usr/bin/python ../rl_server/simple_server.py ' + abr_algo + ' ' + trace_file
-	
+
+	log(command)
+
 	proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+	# proc = subprocess.Popen(command, stderr=subprocess.PIPE, shell=True)
 	sleep(2)
 	
 	# to not display the page in browser
-	display = Display(visible=0, size=(800,600))
+	display = Display(visible=1, size=(800,600))
+	log("display start")
 	display.start()
-	
+	log("display start - done.")
+
 	# initialize chrome driver
 	options=Options()
 	chrome_driver = '../abr_browser_dir/chromedriver'
 	options.add_argument('--user-data-dir=' + chrome_user_dir)
 	options.add_argument('--ignore-certificate-errors')
+	options.add_argument('--autoplay-policy=no-user-gesture-required')
+	log("webdriver.Chrome(chrome_driver, chrome_options=options)")
 	driver=webdriver.Chrome(chrome_driver, chrome_options=options)
-	
+	# driver=webdriver.Chrome(chrome_driver)
+
+
+
 	# run chrome
-	driver.set_page_load_timeout(10)
+	log("driver.set_page_load_timeout(10)")
+	driver.set_page_load_timeout(30)#10)
+	log("driver.get(url)")
+	# url = 'http://www.youtube.com'
+	log("url: " + url)
 	driver.get(url)
-	
+	log("sleep(run_time)")
 	sleep(run_time)
-	
+	log("driver.quit()")
 	driver.quit()
+	log("display.stop()")
 	display.stop()
 	
 	# kill abr algorithm server

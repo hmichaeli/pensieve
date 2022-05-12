@@ -279,7 +279,7 @@ int main() {
 	for (unsigned int trace_idx = 0; 
 		 trace_idx < all_cooked_time_bw.all_cooked_time.size(); 
 		 trace_idx ++) {
-
+        std::cout << "trace: " << trace_idx+1 << ", total: " << all_cooked_time_bw.all_cooked_time.size() << std::endl;
 		std::vector<float> cooked_time = all_cooked_time_bw.all_cooked_time[trace_idx];
 		std::vector<float> cooked_bw = all_cooked_time_bw.all_cooked_bw[trace_idx];
 		log_file.open (OUTPUT_FILE_PATH + "_" + all_cooked_time_bw.all_file_names[trace_idx]);

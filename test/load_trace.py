@@ -2,9 +2,11 @@ import os
 
 
 COOKED_TRACE_FOLDER = './cooked_traces/'
-
+# COOKED_TRACE_FOLDER = './fcc_cur_webget_2_test/'
 
 def load_trace(cooked_trace_folder=COOKED_TRACE_FOLDER):
+    print("[load_trace] COOKED_TRACE_FOLDER = " + COOKED_TRACE_FOLDER)
+
     cooked_files = os.listdir(cooked_trace_folder)
     all_cooked_time = []
     all_cooked_bw = []

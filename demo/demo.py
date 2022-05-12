@@ -49,11 +49,11 @@ all_processed_frames = {}
 for br in ALL_BITRATES:
 	all_processed_frames[br] = []
 
-for _ in xrange(SKIP_FRAMES):
+for _ in range(SKIP_FRAMES):
 	_, frame = cap.read()	
 
 # while(cap.isOpened()):
-for f in xrange(TOTAL_FRAMES):
+for f in range(TOTAL_FRAMES):
 	print 'frame', f
 	_, frame = cap.read()
 	frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)

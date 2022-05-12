@@ -61,8 +61,8 @@ try:
 	sleep(2)
 	
 	# to not display the page in browser
-	display = Display(visible=0, size=(800,600))
-	display.start()
+	# display = Display(visible=0, size=(800,600))
+	# display.start()
 	
 	# initialize chrome driver
 	options=Options()
@@ -73,12 +73,13 @@ try:
 	
 	# run chrome
 	driver.set_page_load_timeout(10)
+	print("url: " + url)
 	driver.get(url)
 	
 	sleep(run_time)
 	
 	driver.quit()
-	display.stop()
+	# display.stop()
 	
 	# kill abr algorithm server
 	proc.send_signal(signal.SIGINT)

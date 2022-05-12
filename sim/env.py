@@ -1,5 +1,5 @@
 import numpy as np
-
+import os
 MILLISECONDS_IN_SECOND = 1000.0
 B_IN_MB = 1000000.0
 BITS_IN_BYTE = 8.0
@@ -14,7 +14,9 @@ LINK_RTT = 80  # millisec
 PACKET_SIZE = 1500  # bytes
 NOISE_LOW = 0.9
 NOISE_HIGH = 1.1
-VIDEO_SIZE_FILE = './video_size_'
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+VIDEO_SIZE_FILE = dir_path+'/video_size_'
 
 
 class Environment:
@@ -40,11 +42,15 @@ class Environment:
         self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
 
         self.video_size = {}  # in bytes
-        for bitrate in xrange(BITRATE_LEVELS):
+        for bitrate in range(BITRATE_LEVELS):
             self.video_size[bitrate] = []
             with open(VIDEO_SIZE_FILE + str(bitrate)) as f:
                 for line in f:
                     self.video_size[bitrate].append(int(line.split()[0]))
+
+        # hagay
+        self.trace_histogram = np.zeros((len(all_cooked_bw)))
+
 
     def get_video_chunk(self, quality):
 
@@ -56,13 +62,16 @@ class Environment:
         # use the delivery opportunity in mahimahi
         delay = 0.0  # in ms
         video_chunk_counter_sent = 0  # in bytes
-        
+
+        MAX_ITERATIONS = 10000
+        iterations = 0
         while True:  # download video chunk over mahimahi
+            iterations += 1
             throughput = self.cooked_bw[self.mahimahi_ptr] \
                          * B_IN_MB / BITS_IN_BYTE
             duration = self.cooked_time[self.mahimahi_ptr] \
                        - self.last_mahimahi_time
-	    
+	        #TODO: bug with webcurr_2 : duration sometimes is 0
             packet_payload = throughput * duration * PACKET_PAYLOAD_PORTION
 
             if video_chunk_counter_sent + packet_payload > video_chunk_size:
@@ -85,11 +94,21 @@ class Environment:
                 self.mahimahi_ptr = 1
                 self.last_mahimahi_time = 0
 
+
+            if iterations >= MAX_ITERATIONS:
+                print("**************")
+                print("stuck in env")
+                print("video_chunk_counter_sent: {} packet_payload: {} video_chunk_size : {} ".format(video_chunk_counter_sent, packet_payload, video_chunk_size))
+                print("throughput: {} duration: {}".format(throughput, duration))
+                print("*************")
+                exit(1)
+
+
         delay *= MILLISECONDS_IN_SECOND
         delay += LINK_RTT
 
-	# add a multiplicative noise to the delay
-	delay *= np.random.uniform(NOISE_LOW, NOISE_HIGH)
+    	# add a multiplicative noise to the delay
+        delay *= np.random.uniform(NOISE_LOW, NOISE_HIGH)
 
         # rebuffer time
         rebuf = np.maximum(delay - self.buffer_size, 0.0)
@@ -111,7 +130,9 @@ class Environment:
                          DRAIN_BUFFER_SLEEP_TIME
             self.buffer_size -= sleep_time
 
+            iterations2 = 0
             while True:
+                iterations2+=1
                 duration = self.cooked_time[self.mahimahi_ptr] \
                            - self.last_mahimahi_time
                 if duration > sleep_time / MILLISECONDS_IN_SECOND:
@@ -127,6 +148,12 @@ class Environment:
                     self.mahimahi_ptr = 1
                     self.last_mahimahi_time = 0
 
+                if iterations2 >= MAX_ITERATIONS:
+                    print("**************")
+                    print("stuck in env")
+                    print("duration: {} sleep_time: {} ".format(duration, sleep_time / MILLISECONDS_IN_SECOND))
+                    print("*************")
+                    exit(1)
         # the "last buffer size" return to the controller
         # Note: in old version of dash the lowest buffer is 0.
         # In the new version the buffer always have at least
@@ -147,13 +174,16 @@ class Environment:
             self.cooked_time = self.all_cooked_time[self.trace_idx]
             self.cooked_bw = self.all_cooked_bw[self.trace_idx]
 
+            # hagay
+            self.trace_histogram[self.trace_idx] += 1
+
             # randomize the start point of the video
             # note: trace file starts with time 0
             self.mahimahi_ptr = np.random.randint(1, len(self.cooked_bw))
             self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
 
         next_video_chunk_sizes = []
-        for i in xrange(BITRATE_LEVELS):
+        for i in range(BITRATE_LEVELS):
             next_video_chunk_sizes.append(self.video_size[i][self.video_chunk_counter])
 
         return delay, \
@@ -164,3 +194,6 @@ class Environment:
             next_video_chunk_sizes, \
             end_of_video, \
             video_chunk_remain
+
+    def return_trace_histogram(self):
+        return self.trace_histogram

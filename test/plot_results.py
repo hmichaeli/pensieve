@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-
+# os.putenv('DISPLAY', ':1')
 RESULTS_FOLDER = './results/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
@@ -16,7 +16,22 @@ SMOOTH_P = 1
 COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired 
 SIM_DP = 'sim_dp'
 #SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
-SCHEMES = ['sim_rl', SIM_DP]
+#SCHEMES = ['sim_rl', SIM_DP]
+# SCHEMES = [ 'sim_bb', 'sim_mpc', SIM_DP,
+# SCHEMES = ['sim_rl', 'pensieve_ep_20000', 'pensieve_ep_40000', 'pensieve_ep_60000', 'pensieve_ep_80000']
+# SCHEMES = ['sim_rl', 'pensieve_ep_10000' , 'pensieve_ep_20000', 'pensieve_ep_30000', 'pensieve_ep_40000'] #,
+# SCHEMES = ['sim_rl','pensieve_ep_1000', 'pensieve_ep_2000', 'pensieve_ep_3000', 'pensieve_ep_4000', 'pensieve_ep_5000',
+# 		    'pensieve_ep_6000', 'pensieve_ep_7000', 'pensieve_ep_8000', 'pensieve_ep_10000']#, 'pensieve_ep_20000'] #,
+# SCHEMES = ['sim_rl', 'pensieve_ep_1000', 'pensieve_ep_2000', 'pensieve_ep_4000', 'pensieve_ep_5000',
+# 		     'pensieve_ep_6000', 'pensieve_ep_7000', 'pensieve_ep_8000', 'pensieve_ep_9000', 'pensieve_ep_30000'] # 'pensieve_ep_20000']#, 'pensieve_ep_20000'] #,
+# 		   # 'pensieve_ep_50000', 'pensieve_ep_60000', 'pensieve_ep_70000', 'pensieve_ep_80000', 'pensieve_ep_90000', 'pensieve_ep_100000']
+#
+# [3000, 5000, 7000, 9000, 20000, 40000, 50000, 60000, 80000, 100000
+# SCHEMES = ['sim_rl', 'pensieve_ep_3000', 'pensieve_ep_5000', 'pensieve_ep_7000', 'pensieve_ep_9000',
+# 		     'pensieve_ep_20000', 'pensieve_ep_40000', 'pensieve_ep_60000', 'pensieve_ep_80000', 'pensieve_ep_100000']
+# SCHEMES = ['sim_rl', 'pensieve_ep_20000']#,'pensieve_ep_30000', 'pensieve_ep_40000', 'pensieve_ep_50000', 'pensieve_ep_60000',
+# 		   #'pensieve_ep_70000', 'pensieve_ep_80000', 'pensieve_ep_90000', 'pensieve_ep_100000']
+SCHEMES = [SIM_DP, 'sim_rl', 'pensieve_ep_20000', 'pensieve_ep_40000', 'pensieve_ep_60000','pensieve_ep_80000']#, 'pensieve_ep_100000']
 
 def main():
 	time_all = {}
@@ -163,7 +178,14 @@ def main():
 	for scheme in SCHEMES:
 		values, base = np.histogram(reward_all[scheme], bins=NUM_BINS)
 		cumulative = np.cumsum(values)
-		ax.plot(base[:-1], cumulative)	
+		# normalze (hagay)
+		cumulative_normalized = (cumulative / float(cumulative[-1])) * 100
+
+		print(cumulative)
+		print(cumulative[-1])
+		print(cumulative_normalized)
+		ax.plot(base[:-1], cumulative_normalized)
+		# ax.plot(base[:-1], cumulative)
 
 	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
 	for i,j in enumerate(ax.lines):

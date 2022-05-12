@@ -27,10 +27,10 @@ VIDEO_SIZE_FILE = './video_size_'
 # pre-compute all possible download time
 def get_download_time(total_video_chunks, quan_time, quan_bw, dt, video_size, bitrate_levels):
     download_time = np.zeros([total_video_chunks, len(quan_time), bitrate_levels])
-    for t in xrange(len(quan_time)):
+    for t in range(len(quan_time)):
         print t, len(quan_time)
-        for n in xrange(total_video_chunks):
-            for b in xrange(bitrate_levels):
+        for n in range(total_video_chunks):
+            for b in range(bitrate_levels):
                 chunk_size = video_size[b][n]  # in bytes
                 downloaded = 0.0
                 time_spent = 0.0
@@ -71,14 +71,14 @@ def main():
     all_cooked_time, all_cooked_bw = load_trace.load_trace()
 
     video_size = {}  # in bytes
-    for bitrate in xrange(BITRATE_LEVELS):
+    for bitrate in range(BITRATE_LEVELS):
         video_size[bitrate] = []
         with open(VIDEO_SIZE_FILE + str(bitrate)) as f:
             for line in f:
                 video_size[bitrate].append(int(line.split()[0]))
 
     # assert len(all_cooked_time) == len(all_cooked_bw)
-    # for cooked_data_idx in xrange(len(all_cooked_time))
+    # for cooked_data_idx in range(len(all_cooked_time))
 
     cooked_time = all_cooked_time[0]
     cooked_bw = all_cooked_bw[0]
@@ -94,7 +94,7 @@ def main():
     quan_bw = np.zeros(len(quan_time))
 
     curr_time_idx = 0
-    for i in xrange(len(quan_bw)):
+    for i in range(len(quan_bw)):
         while curr_time_idx < len(cooked_time) - 1 and \
               cooked_time[curr_time_idx] < quan_time[i]:
             curr_time_idx += 1
@@ -116,7 +116,7 @@ def main():
     full_quan_time = quan_time
     full_quan_bw = quan_bw
 
-    for i in xrange(int(np.ceil(t_portion))):
+    for i in range(int(np.ceil(t_portion))):
         full_quan_time = np.append(full_quan_time,
                                    (quan_time[1:] + full_quan_time[-1]))
         full_quan_bw = np.append(full_quan_bw, quan_bw[1:])
@@ -160,13 +160,13 @@ def main():
         - REBUF_PENALTY * first_chunk_finish_time
     last_dp_pt[(0, first_chunk_finish_idx, buffer_size, DEFAULT_QUALITY)] = (0, 0, 0, 0)
 
-    for n in xrange(1, TOTAL_VIDEO_CHUNCK):
+    for n in range(1, TOTAL_VIDEO_CHUNCK):
         print n, TOTAL_VIDEO_CHUNCK
-        for t in xrange(t_max_idx):
-            for b in xrange(b_max_idx):
-                for m in xrange(BITRATE_LEVELS):
+        for t in range(t_max_idx):
+            for b in range(b_max_idx):
+                for m in range(BITRATE_LEVELS):
                     if (n - 1, t, b, m) in total_reward:
-                        for new_bit_rate in xrange(BITRATE_LEVELS):
+                        for new_bit_rate in range(BITRATE_LEVELS):
                             download_time = \
                                 restore_or_compute_download_time(
                                     all_download_time, n, t, new_bit_rate,

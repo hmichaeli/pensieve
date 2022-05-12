@@ -17,7 +17,7 @@ os.system("sudo apt-get -y install python-setuptools python-pip xvfb xserver-xep
 os.system("tar xvzf selenium-2.39.0.tar.gz")
 selenium_dir = start_dir + "/selenium-2.39.0"
 os.chdir( selenium_dir )
-os.system("sudo python setup.py install" )
+os.system("sudo python3 setup.py install" )
 os.system("sudo sh -c \"echo 'DBUS_SESSION_BUS_ADDRESS=/dev/null' > /etc/init.d/selenium\"")
 
 # py virtual display
@@ -29,7 +29,7 @@ os.system("sudo apt-get -f -y install")
 
 # tensorflow
 os.system("sudo apt-get -y install python-pip python-dev")
-os.system("sudo pip install tensorflow")
+os.system("sudo pip install tensorflow==1.15")
 
 # tflearn
 os.system("sudo pip install tflearn")
@@ -53,5 +53,68 @@ os.system("mkdir run_exp/results")
 os.system("mkdir real_exp/results")
 
 # need to copy the trace and pre-trained NN model
-print "Need to put trace files in 'pensieve/cooked_traces'."
-print "Need to put pre-trained NN model in 'pensieve/rl_server/results'."
+print("Need to put trace files in 'pensieve/cooked_traces'.")
+print("Need to put pre-trained NN model in 'pensieve/rl_server/results'.")
+
+
+################
+'''
+## python requirements - for remote machine
+
+pip install pyvirtualdisplay
+pip install tensorflow==1.15
+pip3 install tflearn
+pip3 install h5py
+pip3 install scipy
+pip3 install matplotlib
+'''
+'''
+pip install pyvirtualdisplay
+pip install tensorflow==1.15
+pip install tflearn
+pip install h5py
+pip install scipy
+pip install matplotlib
+'''
+
+'''
+## shell commands for local machine 
+
+sudo cp video_server/myindex_*.html /var/www/html
+sudo cp video_server/dash.all.min.js /var/www/html
+sudo cp -r video_server/video* /var/www/html
+sudo cp video_server/Manifest.mpd /var/www/html
+
+mkdir cooked_traces
+mkdir rl_server/results
+mkdir run_exp/results
+mkdir real_exp/results
+
+
+######################
+# setup machine
+
+virtualenv -p python venv
+$ source venv/bin/activate
+$ pip install --upgrade pip
+
+pip install pyvirtualdisplay
+ pip install --upgrade 'setuptools<45.0.0'
+pip install tensorflow==1.15
+
+pip install tflearn
+pip install h5py
+pip install scipy
+pip install matplotlib
+
+
+###
+# copy video server files
+# run in cwd pensieve: 
+
+sudo cp video_server/myindex_*.html /var/www/html
+sudo cp video_server/dash.all.min.js /var/www/html
+sudo cp -r video_server/video* /var/www/html
+sudo cp video_server/Manifest.mpd /var/www/html
+
+'''
